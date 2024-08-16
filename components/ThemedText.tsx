@@ -1,3 +1,4 @@
+import React from 'react';
 import { Text, type TextProps, StyleSheet } from 'react-native';
 
 import { useThemeColor } from '@/hooks/useThemeColor';
@@ -5,7 +6,14 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 export type ThemedTextProps = TextProps & {
   lightColor?: string;
   darkColor?: string;
-  type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link';
+  type?: 
+  'default' | 
+  'title' | 
+  'defaultSemiBold' |
+  'defaultCardBold' | 
+  'subtitle' | 
+  'light' | 
+  'titleBold';
 };
 
 export function ThemedText({
@@ -24,8 +32,10 @@ export function ThemedText({
         type === 'default' ? styles.default : undefined,
         type === 'title' ? styles.title : undefined,
         type === 'defaultSemiBold' ? styles.defaultSemiBold : undefined,
+        type === 'defaultCardBold' ? styles.defaultCardBold : undefined,
         type === 'subtitle' ? styles.subtitle : undefined,
-        type === 'link' ? styles.link : undefined,
+        type === 'light' ? styles.light : undefined,
+        type === 'titleBold' ? styles.titleBold : undefined,
         style,
       ]}
       {...rest}
@@ -36,25 +46,33 @@ export function ThemedText({
 const styles = StyleSheet.create({
   default: {
     fontSize: 16,
-    lineHeight: 24,
+    fontFamily: 'Barlow'
+  },
+  light: {
+    fontSize: 18,
+    fontFamily: 'BarlowLight'
+  },
+  defaultCardBold: {
+    fontSize: 20,
+    fontFamily: 'BarlowSemiBold'
   },
   defaultSemiBold: {
     fontSize: 16,
-    lineHeight: 24,
-    fontWeight: '600',
+    fontFamily: 'BarlowSemiBold'
   },
   title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    lineHeight: 32,
+    fontSize: 40,
+    lineHeight: 40,
+    fontFamily: 'BarlowMedium'
+  },
+  titleBold: {
+    fontSize: 24,
+    lineHeight: 24,
+    fontFamily: 'BarlowBold'
   },
   subtitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 26,
+    fontFamily: 'BarlowMedium'
   },
-  link: {
-    lineHeight: 30,
-    fontSize: 16,
-    color: '#0a7ea4',
-  },
+
 });

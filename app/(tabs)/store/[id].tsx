@@ -1,59 +1,71 @@
-import React, { useCallback, useEffect } from 'react';
-import { StyleSheet, View, ScrollView, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import React, { useCallback } from 'react';
+import { View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { ThemedView } from '@/components/ThemedView';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/ThemedText';
-import InventoryCard from '@/components/InventoryCard';
-import { useFocusEffect } from 'expo-router';
-import { useRouter } from 'expo-router';
-import { useAuth } from '@/context/authContext';
+import { useThemeColor } from '@/hooks/useThemeColor';
 import { useProducts } from '@/context/productsContext';
+import InventoryCard from '@/components/InventoryCard';
+import { Ionicons } from '@expo/vector-icons';
 
-const HomeScreen: React.FC = () => {
+const OrderDetailScreen: React.FC = () => {
+  const router = useRouter();
+  const { id, nombre } = useLocalSearchParams();
   const { products, getProducts } = useProducts();
-  const { store } = useAuth();
+
+  const icon = useThemeColor({}, 'icon');
   const borderColor = useThemeColor({}, 'border');
 
   useFocusEffect(
     useCallback(() => {
       const obtainProds = async () => {
-        if (store) {
-          await getProducts(store.id);
+        if (id) {
+          await getProducts(id as any);
         }
       };
 
       obtainProds();
-    }, [store])
+    }, [id])
   );
+
+  const handlePress = () => {
+    router.push('/admin');
+  };
+
+  if (!products) {
+    return (
+      <ThemedView style={styles.container}>
+        <ActivityIndicator size="large" color={icon} style={styles.loadingContainer} />
+      </ThemedView>
+    );
+  }
 
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <View style={[styles.header, { borderBottomColor: borderColor }]}>
-          <ThemedText type='titleBold'>INVENTARIO</ThemedText>
+          <TouchableOpacity onPress={handlePress}>
+            <Ionicons name="chevron-back" size={24} color={icon} />
+          </TouchableOpacity>
+          <ThemedText type='titleBold'>{nombre}</ThemedText>
         </View>
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
-
           {products.length > 0 ? (
             products.map((product, index) => (
               <InventoryCard
                 key={index}
-                image={product.imagenS ? product.imagenS : product.imagen}
+                image={product.imagen}
                 name={product.nombre}
                 price={product.precio}
                 stock={product.cantidad}
               />
             ))
           ) : (
-            <View style={styles.content}>
-              <ThemedText type='default' style={{ textAlign: 'center' }}>
-                Esta sucursal no cuenta con productos,
-                actualiza el inventario capturando productos.
-              </ThemedText>
+            <View>
+              <ThemedText type='defaultCardBold'>No se encontraron productos.</ThemedText>
             </View>
           )}
-
         </ScrollView>
       </SafeAreaView>
     </ThemedView>
@@ -80,10 +92,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     marginBottom: 20,
   },
-  content: {
-    height: '100%',
+  loadingContainer: {
     justifyContent: 'center',
+    alignItems: 'center',
   },
 });
-
-export default HomeScreen;
+export default OrderDetailScreen;
